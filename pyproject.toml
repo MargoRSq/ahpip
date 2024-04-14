@@ -8,6 +8,9 @@ dependencies = [
     "ahpy>=2.0",
     "matplotlib>=3.8.4",
     "pip>=24.0",
+    "fastapi>=0.110.1",
+    "fastui>=0.5.2",
+    "uvicorn>=0.29.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
@@ -27,4 +30,4 @@ allow-direct-references = true
 packages = ["src"]
 
 [project.scripts]
-app = "src.calculator:main"
+app = "src.main:main"
