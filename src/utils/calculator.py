@@ -64,12 +64,13 @@ report = criteria.report(show=False)
 
 def main():
     # vizalize_ahp_result(report["target_weights"])
-    # print(radius.report())
-    fig, (ax0, ax1) = plt.subplots(2)
-    colors = [[np.random.random_sample() for _ in range(3)] for _ in range(4)]
-    vizalize_ahp_result(ax0, colors, energy.report()["elements"]["local_weights"])
-    vizalize_ahp_result(ax1, colors, report["target_weights"])
-    plt.show()
+    print(radius.report())
+    print(report)
+    # fig, (ax0, ax1) = plt.subplots(2)
+    # colors = [[np.random.random_sample() for _ in range(3)] for _ in range(4)]
+    # vizalize_ahp_result(ax0, colors, energy.report()["elements"]["local_weights"])
+    # vizalize_ahp_result(ax1, colors, report["target_weights"])
+    # plt.show()
 
 
 main()

@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastui import prebuilt_html
 
-from src.pages.calculator import router as calculator_router
+from src.pages.input import router as calculator_router
 # from src.pages.work.first import router as first_router
 
 app = FastAPI()

@@ -66,6 +66,8 @@ pyparsing==3.1.2
     # via matplotlib
 python-dateutil==2.9.0.post0
     # via matplotlib
+python-multipart==0.0.9
+    # via ahpip
 rich==13.7.1
     # via ahpip
 scipy==1.13.0

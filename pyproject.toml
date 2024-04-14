@@ -11,6 +11,7 @@ dependencies = [
     "fastapi>=0.110.1",
     "fastui>=0.5.2",
     "uvicorn>=0.29.0",
+    "python-multipart>=0.0.9",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
