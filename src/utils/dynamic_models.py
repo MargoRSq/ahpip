@@ -9,7 +9,7 @@ def create_pair_names(names: list[str]):
 
 def create_dynamic_model(pair_names, criterion, values):
     fields = {"Критерий": (str, criterion)}
-    for name, value in zip(pair_names, values):
+    for name, value in zip(pair_names, list(values)):
         fields[name] = (
             float,
             value,
