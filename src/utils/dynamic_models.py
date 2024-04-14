@@ -7,9 +7,9 @@ def create_pair_names(names: list[str]):
     return [f"{p1} |  {p2}" for p1, p2 in pairs]
 
 
-def create_dynamic_model(pair_names, criterion, values):
-    fields = {"Критерий": (str, criterion)}
-    for name, value in zip(pair_names, list(values)):
+def create_dynamic_model(pair_names, name_field_key, name_field_value, values):
+    fields = {name_field_key: (str, name_field_value)}
+    for name, value in zip(list(pair_names), list(values)):
         fields[name] = (
             float,
             value,

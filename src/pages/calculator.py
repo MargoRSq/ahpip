@@ -76,9 +76,23 @@ final_ahp = criteria_model.compare_object
 final_ahp.add_children([child.compare_object for child in all_compares])
 final_report = final_ahp.report()
 
-m = create_dynamic_model(
-    pair_names=techs, criterion="Итог", values=final_ahp["target_weights"].values()
+
+fm = create_dynamic_model(
+    pair_names=final_ahp["target_weights"].keys(),
+    name_field_key="Критерии",
+    name_field_value="Итог",
+    values=final_ahp["target_weights"].values(),
 )
+
+comps = []
+for am in all_compares:
+    print(am.compare_report["target_weights"])
+    m = fm(
+        name_field_key="Кек",
+        Критерии=am.name,
+        **am.compare_report["target_weights"],
+    )
+    comps.append(m)
 
 
 @router.get("/calulations", response_model=FastUI, response_model_exclude_none=True)
@@ -88,7 +102,11 @@ def calculations_table():
             components=[
                 c.Heading(text="Сравнение технологий по критериям", level=1),
                 c.Table(
-                    data=[m()],
+                    data=[fm()],
+                ),
+                c.Heading(text="Сравнение технологий по критериям", level=1),
+                c.Table(
+                    data=comps,
                 ),
             ],
         )
