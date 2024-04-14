@@ -1,7 +1,9 @@
 import itertools
+import os
 from typing import Annotated, Any
 from fastapi import APIRouter, UploadFile
 from fastui import FastUI
+from matplotlib import pyplot as plt
 from pydantic import BaseModel, computed_field
 from rich import print
 
@@ -77,7 +79,7 @@ final_ahp.add_children([child.compare_object for child in all_compares])
 final_report = final_ahp.report()
 
 
-fm = create_dynamic_model(
+row_model = create_dynamic_model(
     pair_names=final_ahp["target_weights"].keys(),
     name_field_key="Критерии",
     name_field_value="Итог",
@@ -85,14 +87,36 @@ fm = create_dynamic_model(
 )
 
 comps = []
-for am in all_compares:
-    print(am.compare_report["target_weights"])
-    m = fm(
-        name_field_key="Кек",
-        Критерии=am.name,
-        **am.compare_report["target_weights"],
+
+
+def generate_model(row_model, target_weights, name):
+    m = row_model(
+        Критерии=name,
+        **target_weights,
     )
+    fig, ax = plt.subplots()
+    ax.bar(
+        list(target_weights.keys()),
+        list(target_weights.values()),
+        label="Sample Data",
+        align="center",
+    )
+    ax.set_ylim(ymax=1)
+    if not os.path.exists("static"):
+        os.makedirs("static")
+    path = f"src/static/{name}.png"
+    plt.savefig(path)
+    plt.close()
+    return m
+
+
+for i, row in enumerate(all_compares):
+    m = generate_model(row_model, row.compare_report["target_weights"], row.name)
     comps.append(m)
+
+result_m = generate_model(row_model, final_report["target_weights"], "Итог")
+
+print(final_report["target_weights"])
 
 
 @router.get("/calulations", response_model=FastUI, response_model_exclude_none=True)
@@ -100,14 +124,30 @@ def calculations_table():
     return base_page(
         c.Page(
             components=[
-                c.Heading(text="Сравнение технологий по критериям", level=1),
-                c.Table(
-                    data=[fm()],
+                c.Div(
+                    components=[
+                        c.Heading(
+                            text="Сравнение технологий по критериям",
+                            level=1,
+                        ),
+                        c.Image(src=f"/static/{result_m.Критерии}.png", width="50%"),
+                        c.Table(
+                            data=[result_m],
+                        ),
+                    ],
+                    class_name="pb-3",
                 ),
-                c.Heading(text="Сравнение технологий по критериям", level=1),
-                c.Table(
-                    data=comps,
-                ),
+                *[
+                    c.Div(
+                        components=[
+                            c.Heading(text=model.Критерии, level=3),
+                            c.Image(src=f"/static/{model.Критерии}.png", width="50%"),
+                            c.Table(data=[model]),
+                        ],
+                        class_name="border-top mt-3 pt-3",
+                    )
+                    for model in comps
+                ],
             ],
         )
     )
