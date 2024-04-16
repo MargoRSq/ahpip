@@ -12,17 +12,17 @@ def base_page(
         c.PageTitle(text='AHP'),
         c.Navbar(
             title='AHP',
-            title_event=GoToEvent(url='/materials'),
+            title_event=GoToEvent(url='/materials/theory'),
             start_links=[
                 c.Link(
                     components=[c.Text(text='Теория')],
-                    on_click=GoToEvent(url='/materials'),
+                    on_click=GoToEvent(url='/materials/theory'),
                     active='startswith:/materials',
                 ),
                 c.Link(
                     components=[c.Text(text='Калькулятор')],
-                    on_click=GoToEvent(url='/caclulator/input'),
-                    active='startswith:/calclulator',
+                    on_click=GoToEvent(url='/calculator/input'),
+                    active='startswith:/calculator',
                 ),
             ],
         ),

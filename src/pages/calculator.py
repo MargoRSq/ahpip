@@ -107,14 +107,18 @@ print(final_report['target_weights'])
 
 
 @router.get('/forms/input', response_model=FastUI, response_model_exclude_none=True)
-async def calculator():
+def calculator():
     models = []
     for cr, values in comparison_values.items():
         models.append(create_dynamic_model(pair_names_techs, 'Критерий', cr, values))
     return [
         c.Div(
             components=[
-                c.Heading(text='Сравнение технологий по критериям', level=1),
+                c.Heading(
+                    text='Сравнение технологий по критериям',
+                    level=1,
+                    class_name='pb-3',
+                ),
                 c.Table(
                     data=[m() for m in models],
                 ),
@@ -125,21 +129,20 @@ async def calculator():
 
 @router.get('/forms/output', response_model=FastUI, response_model_exclude_none=True)
 def calculations_table():
-    return base_page(
+    return [
         c.Div(
             components=[
                 c.Heading(
-                    text='Итоговое сравнение по критериям',
+                    text='Итог',
                     level=1,
                     class_name='border-bottom pb-3',
                 ),
                 c.Image(src=f'/static/{result_m.Критерии}.png', width='50%'),
-                c.Table(
-                    data=[result_m],
-                ),
+                c.Table(data=[result_m]),
                 c.Heading(
                     text='Cравнение по конкретным критериям',
                     level=1,
+                    class_name='border-bottom pt-3 pb-3',
                 ),
                 *[
                     c.Div(
@@ -148,15 +151,14 @@ def calculations_table():
                             c.Image(src=f'/static/{model.Критерии}.png', width='50%'),
                             c.Table(data=[model]),
                         ],
-                        class_name='border-top mt-3 pt-3',
+                        class_name='border-bottom mt-3 pt-3',
                     )
                     for model in comps
                 ],
             ],
             class_name='pb-3',
         ),
-        # )
-    )
+    ]
 
 
 @router.get('/{kind}', response_model=FastUI, response_model_exclude_none=True)
@@ -165,7 +167,7 @@ def selector(kind) -> list[AnyComponent]:
         c.LinkList(
             links=[
                 c.Link(
-                    components=[c.Text(text='График 1')],
+                    components=[c.Text(text='Попарные сравнения')],
                     on_click=PageEvent(
                         name='change-form',
                         push_path='/calculator/input',
@@ -174,7 +176,7 @@ def selector(kind) -> list[AnyComponent]:
                     active='/input',
                 ),
                 c.Link(
-                    components=[c.Text(text='График 2')],
+                    components=[c.Text(text='Итоговое сравнение')],
                     on_click=PageEvent(
                         name='change-form',
                         push_path='/calculator/output',
@@ -182,15 +184,6 @@ def selector(kind) -> list[AnyComponent]:
                     ),
                     active='/output',
                 ),
-                # c.Link(
-                #     components=[c.Text(text="Задание 3")],
-                #     on_click=PageEvent(
-                #         name="change-form",
-                #         push_path="/work/third",
-                #         context={"kind": "third"},
-                #     ),
-                #     active="/third",
-                # ),
             ],
             mode='tabs',
             class_name='+ mb-4',
@@ -210,6 +203,8 @@ def selector(kind) -> list[AnyComponent]:
     response_model_exclude_none=True,
 )
 def form_content(kind):
-    # match kind:
-    #     case 'calculations':
-    return calculations_table()
+    match kind:
+        case 'output':
+            return calculations_table()
+        case 'input':
+            return calculator()
