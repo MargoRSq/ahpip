@@ -11,6 +11,7 @@ from matplotlib import pyplot as plt
 from pydantic import BaseModel, computed_field
 from rich import print
 
+from src import static_dir
 from src.pages.data import comparison_values, pair_names_techs, techs
 from src.pages.shared import base_page
 from src.utils.dynamic_models import create_dynamic_model
@@ -91,13 +92,13 @@ def generate_model(row_model, target_weights, name):
     ax.set_ylim(ymax=1)
     if not os.path.exists('static'):
         os.makedirs('static')
-    path = f'src/static/{name}.png'
+    path = f'{static_dir}/{name}.png'
     plt.savefig(path)
     plt.close()
     return m
 
 
-for i, row in enumerate(all_compares):
+for _, row in enumerate(all_compares):
     m = generate_model(row_model, row.compare_report['target_weights'], row.name)
     comps.append(m)
 
