@@ -12,17 +12,17 @@ traceback.install(show_locals=False)
 PRECISION = 3
 
 criteria = [
-    "Ёмкость сети",
-    "Энергопотребление передатчика",
-    "Пропускная способность канала",
-    "Стоимость радиомодуля",
-    "Радиус действия базовой станции",
+    'Ёмкость сети',
+    'Энергопотребление передатчика',
+    'Пропускная способность канала',
+    'Стоимость радиомодуля',
+    'Радиус действия базовой станции',
 ]
 criteria_pairs = list(itertools.combinations(criteria, 2))
 criteria_values = [5, 6, 6, 1, 1 / 5, 5, 2, 3, 1 / 7, 1 / 3]
 criteria_comparisons = dict(zip(criteria_pairs, criteria_values))
 
-techs = ["NB-IoT", "LoRa", "Стриж", "URLLC"]
+techs = ['NB-IoT', 'LoRa', 'Стриж', 'URLLC']
 techs_pairs = list(itertools.combinations(techs, 2))
 
 capacity_values = [5, 6, 1 / 3, 1 / 2, 1 / 5, 1 / 5]
@@ -37,19 +37,19 @@ radius_values = [2, 3, 4, 1 / 3, 8, 9]
 radius_comparisons = dict(zip(techs_pairs, radius_values))
 
 
-criteria = ahpy.Compare("Criteria", criteria_comparisons, precision=PRECISION)
+criteria = ahpy.Compare('Criteria', criteria_comparisons, precision=PRECISION)
 
 
-capacity = ahpy.Compare("Ёмкость сети", capacity_comparisons, precision=PRECISION)
+capacity = ahpy.Compare('Ёмкость сети', capacity_comparisons, precision=PRECISION)
 energy = ahpy.Compare(
-    "Энергопотребление передатчика", energy_comparisons, precision=PRECISION
+    'Энергопотребление передатчика', energy_comparisons, precision=PRECISION
 )
 throughput = ahpy.Compare(
-    "Пропускная способность канала", throughput_comparisons, precision=PRECISION
+    'Пропускная способность канала', throughput_comparisons, precision=PRECISION
 )
-cost = ahpy.Compare("Стоимость радиомодуля", cost_comparisons, precision=PRECISION)
+cost = ahpy.Compare('Стоимость радиомодуля', cost_comparisons, precision=PRECISION)
 radius = ahpy.Compare(
-    "Радиус действия базовой станции", radius_comparisons, precision=PRECISION
+    'Радиус действия базовой станции', radius_comparisons, precision=PRECISION
 )
 
 criteria.add_children([capacity, energy, throughput, cost, radius])

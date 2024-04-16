@@ -9,20 +9,20 @@ def base_page(
     *components: AnyComponent, title: str | None = None
 ) -> list[AnyComponent]:
     return [
-        c.PageTitle(text="AHP"),
+        c.PageTitle(text='AHP'),
         c.Navbar(
-            title="AHP",
-            title_event=GoToEvent(url="/materials"),
+            title='AHP',
+            title_event=GoToEvent(url='/materials'),
             start_links=[
                 c.Link(
-                    components=[c.Text(text="Теория")],
-                    on_click=GoToEvent(url="/materials"),
-                    active="startswith:/materials",
+                    components=[c.Text(text='Теория')],
+                    on_click=GoToEvent(url='/materials'),
+                    active='startswith:/materials',
                 ),
                 c.Link(
-                    components=[c.Text(text="Калькулятор")],
-                    on_click=GoToEvent(url="/caclulator"),
-                    active="startswith:/calclulator",
+                    components=[c.Text(text='Калькулятор')],
+                    on_click=GoToEvent(url='/caclulator'),
+                    active='startswith:/calclulator',
                 ),
             ],
         ),
@@ -33,11 +33,11 @@ def base_page(
             ],
         ),
         c.Footer(
-            extra_text="Квартовкин Святослав",
+            extra_text='Квартовкин Святослав',
             links=[
                 c.Link(
-                    components=[c.Text(text="Github")],
-                    on_click=GoToEvent(url="https://github.com/margorsq"),
+                    components=[c.Text(text='Github')],
+                    on_click=GoToEvent(url='https://github.com/margorsq'),
                 ),
             ],
         ),

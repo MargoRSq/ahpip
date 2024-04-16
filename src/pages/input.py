@@ -31,28 +31,3 @@ from src.pages.data import (
 )
 
 router = APIRouter()
-
-
-@router.get("/input", response_model=FastUI, response_model_exclude_none=True)
-async def calculator():
-    # criteria_compare_model = create_dynamic_model(
-    #     pair_names_criteria, criteria_keys, criteria_values
-    # )
-
-    models = []
-    for cr, values in comparison_values.items():
-        models.append(create_dynamic_model(pair_names_techs, cr, values))
-    return base_page(
-        c.Page(
-            components=[
-                # c.Heading(text="Сравнение критериев", level=1),
-                # c.Table(
-                #     data=[m() for m in [criteria_compare_model]],
-                # ),
-                c.Heading(text="Сравнение технологий по критериям", level=1),
-                c.Table(
-                    data=[m() for m in models],
-                ),
-            ],
-        )
-    )

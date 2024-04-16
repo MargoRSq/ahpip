@@ -32,3 +32,6 @@ packages = ["src"]
 
 [project.scripts]
 app = "src.main:main"
+
+[tool.ruff.format]
+quote-style = "single"

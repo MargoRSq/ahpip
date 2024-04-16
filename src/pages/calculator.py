@@ -43,7 +43,7 @@ class AHPModel(BaseModel):
     @computed_field
     def keys_pairs_strings(self) -> list[str]:
         pairs = list(itertools.combinations(self.keys, 2))
-        return [f"{p1} |  {p2}" for p1, p2 in pairs]
+        return [f'{p1} |  {p2}' for p1, p2 in pairs]
 
     @computed_field
     def comparisons(self) -> list[tuple]:
@@ -64,7 +64,7 @@ class AHPModel(BaseModel):
 
 
 criteria_model = AHPModel(
-    name="Критерии",
+    name='Критери',
     keys=list(comparison_values.keys()),
     values=[5, 6, 6, 1, 1 / 5, 5, 2, 3, 1 / 7, 1 / 3],
 )
@@ -80,10 +80,10 @@ final_report = final_ahp.report()
 
 
 row_model = create_dynamic_model(
-    pair_names=final_ahp["target_weights"].keys(),
-    name_field_key="Критерии",
-    name_field_value="Итог",
-    values=final_ahp["target_weights"].values(),
+    pair_names=final_ahp['target_weights'].keys(),
+    name_field_key='Критерии',
+    name_field_value='Итог',
+    values=final_ahp['target_weights'].values(),
 )
 
 comps = []
@@ -98,56 +98,133 @@ def generate_model(row_model, target_weights, name):
     ax.bar(
         list(target_weights.keys()),
         list(target_weights.values()),
-        label="Sample Data",
-        align="center",
+        label='Sample Data',
+        align='center',
     )
     ax.set_ylim(ymax=1)
-    if not os.path.exists("static"):
-        os.makedirs("static")
-    path = f"src/static/{name}.png"
+    if not os.path.exists('static'):
+        os.makedirs('static')
+    path = f'src/static/{name}.png'
     plt.savefig(path)
     plt.close()
     return m
 
 
 for i, row in enumerate(all_compares):
-    m = generate_model(row_model, row.compare_report["target_weights"], row.name)
+    m = generate_model(row_model, row.compare_report['target_weights'], row.name)
     comps.append(m)
 
-result_m = generate_model(row_model, final_report["target_weights"], "Итог")
+result_m = generate_model(row_model, final_report['target_weights'], 'Итог')
 
-print(final_report["target_weights"])
+print(final_report['target_weights'])
 
 
-@router.get("/calulations", response_model=FastUI, response_model_exclude_none=True)
-def calculations_table():
+@router.get('/forms/input', response_model=FastUI, response_model_exclude_none=True)
+async def calculator():
+    models = []
+    for cr, values in comparison_values.items():
+        models.append(create_dynamic_model(pair_names_techs, 'Критерий', cr, values))
     return base_page(
         c.Page(
             components=[
-                c.Div(
-                    components=[
-                        c.Heading(
-                            text="Сравнение технологий по критериям",
-                            level=1,
-                        ),
-                        c.Image(src=f"/static/{result_m.Критерии}.png", width="50%"),
-                        c.Table(
-                            data=[result_m],
-                        ),
-                    ],
-                    class_name="pb-3",
+                c.Heading(text='Сравнение технологий по критериям', level=1),
+                c.Table(
+                    data=[m() for m in models],
                 ),
-                *[
-                    c.Div(
-                        components=[
-                            c.Heading(text=model.Критерии, level=3),
-                            c.Image(src=f"/static/{model.Критерии}.png", width="50%"),
-                            c.Table(data=[model]),
-                        ],
-                        class_name="border-top mt-3 pt-3",
-                    )
-                    for model in comps
-                ],
             ],
         )
     )
+
+
+@router.get(
+    '/forms/calculations', response_model=FastUI, response_model_exclude_none=True
+)
+def calculations_table():
+    return base_page(
+        c.Div(
+            components=[
+                c.Heading(
+                    text='Итоговое сравнение по критериям',
+                    level=1,
+                    class_name='border-bottom pb-3',
+                ),
+                c.Image(src=f'/static/{result_m.Критерии}.png', width='50%'),
+                c.Table(
+                    data=[result_m],
+                ),
+            ],
+            class_name='pb-3',
+        ),
+        c.Heading(
+            text='Cравнение по конкретным критериям',
+            level=1,
+        ),
+        *[
+            c.Div(
+                components=[
+                    c.Heading(text=model.Критерии, level=3),
+                    c.Image(src=f'/static/{model.Критерии}.png', width='50%'),
+                    c.Table(data=[model]),
+                ],
+                class_name='border-top mt-3 pt-3',
+            )
+            for model in comps
+        ],
+        # )
+    )
+
+
+@router.get('/{kind}', response_model=FastUI, response_model_exclude_none=True)
+def selector(kind):
+    return base_page(
+        c.LinkList(
+            links=[
+                c.Link(
+                    components=[c.Text(text='График 1')],
+                    on_click=PageEvent(
+                        name='change-form',
+                        push_path='/calculator/input',
+                        context={'kind': 'input'},
+                    ),
+                    active='/input',
+                ),
+                c.Link(
+                    components=[c.Text(text='График 2')],
+                    on_click=PageEvent(
+                        name='change-form',
+                        push_path='/calculator/calculations',
+                        context={'kind': 'output'},
+                    ),
+                    active='/output',
+                ),
+                # c.Link(
+                #     components=[c.Text(text="Задание 3")],
+                #     on_click=PageEvent(
+                #         name="change-form",
+                #         push_path="/work/third",
+                #         context={"kind": "third"},
+                #     ),
+                #     active="/third",
+                # ),
+            ],
+            mode='tabs',
+            class_name='+ mb-4',
+        ),
+        c.ServerLoad(
+            path=f'/calculator/forms/{kind}',
+            load_trigger=PageEvent(name='change-form'),
+            components=form_content(kind),
+        ),
+        title='Исследование звукоизоляции ограждающих конструкций',
+    )
+
+
+@router.get(
+    '/api/calculator/forms/{kind}',
+    response_model=FastUI,
+    response_model_exclude_none=True,
+)
+def form_content(kind):
+    match kind:
+        case 'output':
+            return calculations_table()
