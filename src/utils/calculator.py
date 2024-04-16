@@ -1,11 +1,7 @@
-import ahpy
-from matplotlib import pyplot as plt
-import numpy as np
-from rich import traceback, print, pretty
-from pydantic import BaseModel
 import itertools
-from src.utils.vizualization import vizalize_ahp_result
 
+import ahpy
+from rich import print, traceback
 
 traceback.install(show_locals=False)
 

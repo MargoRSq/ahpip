@@ -1,4 +1,5 @@
 import itertools
+
 from pydantic import create_model
 
 

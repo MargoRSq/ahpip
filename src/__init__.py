@@ -8,6 +8,7 @@ from fastui import prebuilt_html
 
 # from src.pages.input import router as input_router
 from src.pages.calculator import router as calculator_router
+
 # from src.pages.navigation import router as navigation_router
 # from src.pages.work.first import router as first_router
 
@@ -26,5 +27,4 @@ app.include_router(calculator_router, prefix='/api/calculator')
 
 @app.get('/{path:path}')
 async def html_landing() -> HTMLResponse:
-    """Simple HTML page which serves the React app, comes last as it matches all paths."""
     return HTMLResponse(prebuilt_html(title='FastUI Demo'))

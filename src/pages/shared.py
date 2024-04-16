@@ -21,7 +21,7 @@ def base_page(
                 ),
                 c.Link(
                     components=[c.Text(text='Калькулятор')],
-                    on_click=GoToEvent(url='/caclulator'),
+                    on_click=GoToEvent(url='/caclulator/input'),
                     active='startswith:/calclulator',
                 ),
             ],

@@ -1,6 +1,6 @@
 import itertools
-from src.utils.dynamic_models import create_pair_names
 
+from src.utils.dynamic_models import create_pair_names
 
 techs = ['NB-IoT', 'LoRa', 'Стриж', 'URLLC']
 techs_pairs = list(itertools.combinations(techs, 2))
