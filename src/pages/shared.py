@@ -28,7 +28,7 @@ def base_page(
         ),
         c.Page(
             components=[
-                # *((c.Heading(text=title),) if title else ()),
+                *((c.Heading(text=title),) if title else ()),
                 *components,
             ],
         ),
