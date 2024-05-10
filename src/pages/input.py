@@ -10,7 +10,6 @@ from fastui import components as c
 from fastui.forms import SelectOption, fastui_form
 from matplotlib import pyplot as plt
 from pydantic import BaseModel, field_validator
-from rich import print
 
 from src.pages.calculator import AHPModel
 from src.pages.data import (
@@ -21,6 +20,7 @@ from src.pages.data import (
     enum_values,
 )
 from src.pages.shared import base_page
+from src.utils.calc import calculate_ahp, create_ahp_pie_query
 
 matplotlib.use('Agg')
 router = APIRouter()
@@ -68,7 +68,6 @@ async def input_json_file(file: UploadFile):
         )
         for s in itertools.product(input_model.criterias, objects_pairs_strings)
     ]
-    # print(list(itertools.combinations(input_model.criterias, 2)))
     return [
         c.Heading(text='Попарные сравнения', level=2),
         c.Form(
@@ -79,10 +78,10 @@ async def input_json_file(file: UploadFile):
 
 
 class Tdata(BaseModel):
-    comp: str
-    val: float
+    key: str
+    value: float
 
-    @field_validator('val', mode='before')
+    @field_validator('value', mode='before')
     def float_numbers(cls, value):
         if isinstance(value, str) and '/' in value:
             splited = value.split(' / ')
@@ -97,47 +96,27 @@ class Tdata(BaseModel):
 async def calc(request: Request):
     form = await request.form()
     data = dict(form)
-    print(data)
 
-    criterias_values = [
-        value for key, value in data.items() if key.startswith('criteria_')
+    ahp_results = calculate_ahp(data)
+    criteria_pie_query = create_ahp_pie_query(ahp_results.criterias)
+    criteria_image = c.Image(src=f'/api/drawer/draw_chart?{criteria_pie_query}')
+
+    objects_images = [
+        c.Image(src=f'/api/drawer/draw_chart?{create_ahp_pie_query(object)}')
+        for object in ahp_results.objects
     ]
-    criterias = []
-    for key, _ in data.items():
-        if key.startswith('criteria_'):
-            criteria = key.split('_')[1]
-            if criteria not in criterias:
-                criterias.append(criteria)
-    last_key = next(reversed(data))
-    criterias.append(last_key.split('_')[1])
-    print(criterias)
 
-    criteria_model = AHPModel(
-        name='Критерии',
-        keys=criterias,
-        values=criterias_values,
-    )
-    final_ahp = criteria_model.compare_report
-    target_weights = final_ahp['target_weights']
-    target_data = []
-    for k, v in final_ahp['target_weights'].items():
-        target_data.append(Tdata(comp=k, val=v))
-
-    query_params = {
-        'labels': list(target_weights.keys()),
-        'sizes': list(target_weights.values()),
-    }
-    query_string = urlencode(query_params, doseq=True)
-
-    return base_page(
-        c.Image(src=f'/api/drawer/draw_chart?{query_string}'),
-        c.Div(
-            components=[
-                c.Table(data=target_data),
-            ],
-            class_name='d-flex justify-content-center',
-        ),
-    )
+    return [
+        criteria_image,
+        *objects_images,
+        # c.Div(
+        #     components=[
+        #         c.Table(data=target_data),
+        #     ],
+        #     class_name='d-flex justify-content-center',
+        # ),
+        # *list_of_objects_elements,
+    ]
 
 
 # -----------------------------------------------------------------------------
@@ -155,16 +134,16 @@ def materials():
     )
 
 
-class Tdata(BaseModel):
-    comp: str
-    val: float
+# class Tdata(BaseModel):
+#     comp: str
+#     val: float
 
-    @field_validator('val', mode='before')
-    def float_numbers(cls, value):
-        if isinstance(value, str) and '/' in value:
-            splited = value.split(' / ')
-            return int(splited[0]) / int(splited[1])
-        return value
+#     @field_validator('val', mode='before')
+#     def float_numbers(cls, value):
+#         if isinstance(value, str) and '/' in value:
+#             splited = value.split(' / ')
+#             return int(splited[0]) / int(splited[1])
+#         return value
 
 
 @router.post('/inputer', response_model=FastUI, response_model_exclude_none=True)
@@ -192,7 +171,6 @@ def inputer(form: Annotated[InputFormCriterias, fastui_form(InputFormCriterias)]
         submit_url='/api/input/outputer',
         method='POST',
     )
-    print(f)
     query_params = {
         'labels': list(target_weights.keys()),
         'sizes': list(target_weights.values()),
@@ -213,7 +191,6 @@ def inputer(form: Annotated[InputFormCriterias, fastui_form(InputFormCriterias)]
 
 @router.post('/outputer', response_model=FastUI, response_model_exclude_none=True)
 def kek(form: Annotated[InputFormObjects, fastui_form(InputFormObjects)]):
-    print(form)
     return []
 
 
@@ -241,5 +218,4 @@ def lol():
 @router.post('/testing')
 async def post_lol(request: Request):
     f = await request.form()
-    print(dict(f))
     return base_page(c.Text(text='1'))

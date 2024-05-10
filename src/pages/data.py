@@ -4,14 +4,13 @@ import json
 
 from fastui.forms import SelectOption
 from pydantic import create_model
-from rich import print
 
 from src.utils.dynamic_models import create_pair_names
 
 techs = ['NB-IoT', 'LoRa', 'Стриж', 'URLLC']
 techs_pairs = list(itertools.combinations(techs, 2))
 
-print(techs_pairs)
+# print(techs_pairs)
 
 # app.include_router(first_router, prefix="/api/work/first")
 comparison_values = {
@@ -44,7 +43,7 @@ objects_pairs_strings = [
 ]
 objects_with_criterias = list(itertools.product(criterias, objects_pairs_strings))
 objects_with_string = [f'|{s[0]}| {s[1]}' for s in objects_with_criterias]
-print(objects_with_string)
+# print(objects_with_string)
 
 
 enum_values = {
