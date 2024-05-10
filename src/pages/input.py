@@ -98,6 +98,9 @@ async def calc(request: Request):
     data = dict(form)
 
     ahp_results = calculate_ahp(data)
+
+    final_image_query = create_ahp_pie_query(ahp_results.final)
+    final_image = c.Image(src=f'/api/drawer/draw_chart?{final_image_query}')
     criteria_pie_query = create_ahp_pie_query(ahp_results.criterias)
     criteria_image = c.Image(src=f'/api/drawer/draw_chart?{criteria_pie_query}')
 
@@ -105,8 +108,11 @@ async def calc(request: Request):
         c.Image(src=f'/api/drawer/draw_chart?{create_ahp_pie_query(object)}')
         for object in ahp_results.objects
     ]
+    objects_names = [object.name for object in ahp_results.objects]
+    print(objects_names)
 
     return [
+        final_image,
         criteria_image,
         *objects_images,
         # c.Div(

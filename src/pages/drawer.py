@@ -6,7 +6,7 @@ from fastapi import APIRouter, Query, Response
 from matplotlib import pyplot as plt
 
 
-def draw_pie(labels: list[str], sizes: list[float]) -> BytesIO:
+def draw_pie(title: str, labels: list[str], sizes: list[float]) -> BytesIO:
     colors = plt.cm.Blues(np.linspace(0.2, 1, len(labels)))
 
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -28,6 +28,7 @@ def draw_pie(labels: list[str], sizes: list[float]) -> BytesIO:
     )
 
     plt.subplots_adjust(right=0.75)  # Оставляем место для легенды
+    plt.title(title)
 
     buf = BytesIO()
     plt.savefig(buf, format='png')
@@ -41,6 +42,10 @@ router = APIRouter()
 
 
 @router.get('/draw_chart')
-def draw(labels: List[str] = Query(...), sizes: List[float] = Query(...)):
-    img_bytes = draw_pie(labels=labels, sizes=sizes)
+async def draw(
+    title: str = Query(...),
+    labels: List[str] = Query(...),
+    sizes: List[float] = Query(...),
+):
+    img_bytes = draw_pie(title=title, labels=labels, sizes=sizes)
     return Response(content=img_bytes.read(), media_type='image/png')

@@ -5,6 +5,7 @@ from urllib.parse import urlencode
 
 import ahpy
 from pydantic import BaseModel, computed_field, field_validator
+from rich import print
 
 
 class TargetWeights(BaseModel):
@@ -89,6 +90,7 @@ class AHPModel(BaseModel):
 
 
 class AHPConclusion(BaseModel):
+    name: str
     keys: list[str]
     weights: list[float]
     consistency_ratio: float = 0.0
@@ -121,9 +123,11 @@ def calculate_single_ahp_conclusion(
         keys=keys,
         values=values,
     )
-    final_ahp = ahp_model.compare_report
-    target_weights = final_ahp['target_weights']
+    ahp_report = ahp_model.compare_report
+    target_weights = ahp_report['target_weights']
+    print(keys, values, ahp_report)
     conslusion = AHPConclusion(
+        name=name,
         keys=list(target_weights.keys()),
         weights=list(target_weights.values()),
         consistency_ratio=ahp_model.compare_object.consistency_ratio,
@@ -156,7 +160,8 @@ def calculate_ahp(data: dict) -> AHPResults:
         splited_key = key.split('_')
         if splited_key[1] == first_key:
             crits = splited_key[2].split(' и ')
-            objects_unique_names.append(crits[1])
+            if crits[1] not in objects_unique_names:
+                objects_unique_names.append(crits[1])
         else:
             break
     objects_map = defaultdict(list)
@@ -179,6 +184,7 @@ def calculate_ahp(data: dict) -> AHPResults:
     )
     final_target_weights = final_ahp_object['target_weights']
     final_conclusion = AHPConclusion(
+        name='Финальное сравнение',
         keys=final_target_weights.keys(),
         weights=final_target_weights.values(),
         consistency_ratio=final_ahp_object.consistency_ratio,
@@ -193,8 +199,10 @@ def calculate_ahp(data: dict) -> AHPResults:
 
 def create_ahp_pie_query(conclusion: AHPConclusion) -> str:
     query_params = {
+        'title': conclusion.name,
         'labels': conclusion.keys,
         'sizes': conclusion.weights,
     }
+    print(query_params)
     query_string = urlencode(query_params, doseq=True)
     return query_string

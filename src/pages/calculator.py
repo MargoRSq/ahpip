@@ -40,7 +40,7 @@ class AHPModel(BaseModel):
     @computed_field
     @property
     def compare_object(self) -> Any:
-        return ahpy.Compare(self.name, self.comparisons, precision=4)
+        return ahpy.Compare(self.name, self.comparisons, precision=3)
 
     @computed_field
     @property
@@ -61,6 +61,7 @@ all_compares = [
     AHPModel(name=key, keys=techs, values=value)
     for key, value in comparison_values.items()
 ]
+
 # print(all_compares)
 
 final_ahp = criteria_model.compare_object
