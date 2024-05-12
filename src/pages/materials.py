@@ -1,42 +1,10 @@
 from fastapi import APIRouter
 from fastui import FastUI
 from fastui import components as c
-from pydantic import BaseModel
 
 from src.pages.shared import base_page
 
 router = APIRouter()
-
-
-class CompareElement(BaseModel):
-    desc: str = ''
-    value: str
-
-
-compare_elements_dict = {
-    '1/9': 'Принципиально хуже',
-    '1/8': '',
-    '1/7': 'Значительно хуже',
-    '1/6': '',
-    '1/5': 'Хуже',
-    '1/4': '',
-    '1/3': 'Немного хуже',
-    '1/2': '',
-    '1': 'Равная важность',
-    '2': '',
-    '3': 'Немного лучше',
-    '4': '',
-    '5': 'Лучше',
-    '6': '',
-    '7': 'Значительно лучше',
-    '8': '',
-    '9': 'Принципиально лучше',
-}
-
-compare_elements = [
-    CompareElement(desc=key, value=value)
-    for key, value in compare_elements_dict.items()
-]
 
 about_ahp = [
     c.Markdown(

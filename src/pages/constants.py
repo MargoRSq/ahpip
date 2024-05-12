@@ -1,6 +1,4 @@
-from fastui import components as c
 from fastui.forms import SelectOption
-
 
 enum_values = {
     'one_nine': '1 / 9',
