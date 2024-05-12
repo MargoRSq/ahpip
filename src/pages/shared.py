@@ -20,8 +20,13 @@ def base_page(
                     active='startswith:/materials',
                 ),
                 c.Link(
+                    components=[c.Text(text='Инструкция')],
+                    on_click=GoToEvent(url='/instruction/instruction'),
+                    active='startswith:/instruction',
+                ),
+                c.Link(
                     components=[c.Text(text='Калькулятор')],
-                    on_click=GoToEvent(url='/calculator/input'),
+                    on_click=GoToEvent(url='/calculator/input_json'),
                     active='startswith:/calculator',
                 ),
             ],

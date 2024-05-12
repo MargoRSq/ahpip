@@ -53,3 +53,5 @@ select = [
     # isort
     "I",
 ]
+[tool.ruff.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.params.Depends", "fastapi.Query", "fastapi.params.Query"]

@@ -1,16 +1,20 @@
 from io import BytesIO
 from typing import List
 
+import matplotlib
 import numpy as np
 from fastapi import APIRouter, Query, Response
 from matplotlib import pyplot as plt
+
+matplotlib.use('Agg')
+plt.ioff()
 
 
 def draw_pie(title: str, labels: list[str], sizes: list[float]) -> BytesIO:
     colors = plt.cm.Blues(np.linspace(0.2, 1, len(labels)))
 
     fig, ax = plt.subplots(figsize=(10, 6))
-    wedges, texts, autotexts = ax.pie(
+    wedges, _, autotexts = ax.pie(
         sizes, colors=colors, autopct='%1.1f%%', pctdistance=0.75
     )
     plt.setp(
@@ -27,7 +31,7 @@ def draw_pie(title: str, labels: list[str], sizes: list[float]) -> BytesIO:
         bbox_to_anchor=(1, 0, 0.5, 1),
     )
 
-    plt.subplots_adjust(right=0.75)  # Оставляем место для легенды
+    plt.subplots_adjust(right=0.75)
     plt.title(title)
 
     buf = BytesIO()
