@@ -3,32 +3,13 @@ from fastui import FastUI
 from fastui import components as c
 
 from src.pages.shared import base_page
+from src.utils.constants import about_markdown_str
 
 router = APIRouter()
 
-about_ahp = [
-    c.Markdown(
-        text="""# Метод анализа иерархий
-
-### История и суть
-
-В 1970 г. Томас Саати (США) разработал метод анализа иерархий - **Analityc hierarchy process (AHP)**. Относится к классу критериальных методов. Получил широкое распространение и до сих пор активно используется в управленческой практике. Приводит ЛПР не к «правильному» решению, а к варианту, наилучшим образом согласующемуся с его пониманием сути проблемы и требованиями к ее решению.
-
-### Этапы метода
-
-1. Выделение проблемы. Определение цели.
-2. Выделение основных критериев и альтернатив. 
-3. Построение иерархии: дерево от цели через критерии к альтернативам.
-4. Построение матрицы попарных сравнений критериев по цели и альтернатив по критериям. **(выполняется программой)**
-5. Применение методики анализа полученных матриц. **(выполняется программой)**
-6. Определение весов альтернатив по системе иерархии. **(выполняется программой)**
-
-"""  # noqa: E501
-    ),
-    c.Image(src='/static/ahp_tree.jpeg'),
-]
-
 
 @router.get('/theory', response_model=FastUI, response_model_exclude_none=True)
-def materials():
-    return base_page(*about_ahp)
+async def materials():
+    about_ahp_markdown = c.Markdown(text=about_markdown_str)
+    ahp_tree_image = c.Image(src='/static/ahp_tree.jpeg')
+    return base_page(about_ahp_markdown, ahp_tree_image)

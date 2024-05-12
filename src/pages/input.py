@@ -6,12 +6,11 @@ from fastui import FastUI
 from fastui import components as c
 from pydantic import BaseModel, ValidationError
 
-from src.pages.constants import (
-    enum_selector,
-    enum_values,
-)
 from src.pages.shared import base_page
 from src.utils.calculator import calculate_ahp, create_ahp_pie_query
+from src.utils.constants import (
+    enum_selector,
+)
 
 router = APIRouter()
 
@@ -47,7 +46,7 @@ async def input_json_file(file: UploadFile):
             name=f'criteria_{s[0]}_{s[1]}',
             title=['Критерий', f'{s[0]} и {s[1]}'],
             options=enum_selector,
-            initial=enum_values['one'],
+            initial='1',
             required=True,
         )
         for s in itertools.combinations(input_model.criterias, 2)
@@ -61,17 +60,16 @@ async def input_json_file(file: UploadFile):
             title=['Сравнение по критерию', s[0], f'{s[1]}'],
             options=enum_selector,
             required=True,
-            initial=enum_values['one'],
+            initial='1',
         )
         for s in itertools.product(input_model.criterias, objects_pairs_strings)
     ]
 
-    compare_heading = c.Heading(text='Попарные сравнения', level=2, class_name='mb-3')
     compare_form = c.Form(
         submit_url='/api/calculator/calculator',
         form_fields=[*criterias_pairs_compares, *objects_pairs_compares],
     )
-    return [compare_heading, compare_form]
+    return [compare_form]
 
 
 @router.post('/calculator', response_model=FastUI, response_model_exclude_none=True)
