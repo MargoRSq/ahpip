@@ -5,7 +5,6 @@ from urllib.parse import urlencode
 
 import ahpy
 from pydantic import BaseModel, computed_field, field_validator
-from rich import print
 
 
 class AHPModel(BaseModel):
@@ -41,7 +40,6 @@ class AHPModel(BaseModel):
 
     @field_validator('values', mode='before')
     def float_numbers(cls, values):
-        print(values)
         float_values = []
         for value in values:
             if isinstance(value, str) and '/' in value:
@@ -164,6 +162,5 @@ def create_ahp_pie_query(conclusion: AHPConclusion) -> str:
         'labels': conclusion.keys,
         'sizes': conclusion.weights,
     }
-    print(query_params)
     query_string = urlencode(query_params, doseq=True)
     return query_string
