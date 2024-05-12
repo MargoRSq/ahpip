@@ -70,7 +70,7 @@ class SingleComparison(BaseModel):
     @field_validator('value', mode='before')
     def float_numbers(cls, value):
         if isinstance(value, str) and '/' in value:
-            splited = value.split(' / ')
+            splited = value.split('/')
             return int(splited[0]) / int(splited[1])
         return value
 
@@ -125,7 +125,8 @@ def calculate_ahp(data: dict) -> AHPResults:
             break
     objects_map = defaultdict(list)
     for key, value in objects.items():
-        objects_map[key.split('_')[1]].append(value)
+        obj = SingleComparison(key=key, value=value)
+        objects_map[key.split('_')[1]].append(obj.value)
 
     criteria_conclusion = calculate_single_ahp_conclusion(
         'Критерии', criterias_unique_names, [cr.value for cr in criterias_comparisons]
