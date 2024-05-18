@@ -165,3 +165,19 @@ def create_ahp_pie_query(conclusion: AHPConclusion) -> str:
     }
     query_string = urlencode(query_params, doseq=True)
     return query_string
+
+
+def flatten_json(data):
+    flattened = {}
+
+    for category, items in data.items():
+        for key, value in items.items():
+            if isinstance(value, dict):
+                for sub_key, sub_value in value.items():
+                    new_key = f'{category}_{key}_{sub_key}'
+                    flattened[new_key] = sub_value
+            else:
+                new_key = f'{category}_{key}'
+                flattened[new_key] = value
+
+    return flattened

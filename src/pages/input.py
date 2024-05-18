@@ -1,13 +1,15 @@
 import itertools
 import json
 
+import httpx
 from fastapi import APIRouter, Request, UploadFile
 from fastui import FastUI
 from fastui import components as c
 from pydantic import BaseModel, ValidationError
+from rich import print
 
 from src.pages.shared import base_page
-from src.utils.calculator import calculate_ahp, create_ahp_pie_query
+from src.utils.calculator import calculate_ahp, create_ahp_pie_query, flatten_json
 from src.utils.constants import (
     enum_selector,
 )
@@ -39,7 +41,15 @@ async def input_json_file(file: UploadFile):
     try:
         input_model = InputSchema.model_validate(data)
     except ValidationError:
-        return []
+        async with httpx.AsyncClient() as client:
+            payload = flatten_json(data)
+            print(payload)
+            response = await client.post(
+                'http://127.0.0.1:8000/api/calculator/calculator', json=payload
+            )
+            response.raise_for_status()
+            response_json = response.json()
+        return response_json
 
     criterias_pairs_compares = [
         c.FormFieldSelect(
@@ -75,7 +85,11 @@ async def input_json_file(file: UploadFile):
 @router.post('/calculator', response_model=FastUI, response_model_exclude_none=True)
 async def calc(request: Request):
     form = await request.form()
-    data = dict(form)
+    if form:
+        data = dict(form)
+    else:
+        data = await request.json()
+        print(data)
 
     ahp_results = calculate_ahp(data)
 
