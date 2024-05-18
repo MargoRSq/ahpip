@@ -98,10 +98,12 @@ async def calc(request: Request):
     criteria_pie_query = create_ahp_pie_query(ahp_results.criterias)
     criteria_image = c.Image(src=f'/api/drawer/draw_chart?{criteria_pie_query}')
 
-    objects_images = [
-        c.Image(src=f'/api/drawer/draw_chart?{create_ahp_pie_query(object)}')
+    image_endpoints = [
+        f'/api/drawer/draw_chart?{create_ahp_pie_query(object)}'
         for object in ahp_results.objects
     ]
+    objects_images = [c.Image(src=endpoint) for endpoint in image_endpoints]
+
     return [
         final_image,
         criteria_image,
